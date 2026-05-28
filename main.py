@@ -34,6 +34,13 @@ def pounds_to_kg(pounds: float) -> float:
     kg = pounds / 2.20462
     return kg
 
+def show_conversion_history(conversion_history: list) -> None:
+    if not conversion_history :
+        print("the conversion history is empty")
+        return
+    for item in conversion_history:
+        print(f'{conversion_history.index(item)+1}. {item}')
+
 
 actions = {
     1: {
@@ -96,6 +103,11 @@ actions = {
         "in_unit": "Pounds",
         "out_unit": "KG"
     },
+    11: {
+        "label": "Conversion History",
+        "func": show_conversion_history,
+        "required_input": False
+    },
     0: {
         "label": "Exit",
         "func": None
@@ -126,6 +138,7 @@ def get_value(prompt):
             print("Invalid number. Try again.")
 
 def main():
+    conversions_history = []
     while True:
         choice = get_choice(actions)
         action = actions[choice]
@@ -134,10 +147,16 @@ def main():
             print("Goodbye.")
             break
 
-        value = get_value(f"Enter the value in {action['in_unit']}: ")
-        result = action["func"](value)
+        elif action.get("required_input", True):
+            value = get_value(f"Enter the value in {action['in_unit']}: ")
+            result = action["func"](value)
 
-        print(f"Result: {result:.2f} {action['out_unit']}")
+            print(f"Result: {result:.2f} {action['out_unit']}")
+            conversions_history.append(
+                f'{value:.2f} {action["in_unit"]} = {result:.2f} {action["out_unit"]}')
+        else:
+            show_conversion_history(conversions_history)
+
 
 if __name__ == "__main__":
     main()
