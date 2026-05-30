@@ -1,35 +1,63 @@
 # Multi Converter CLI
 
-A simple and interactive command-line application written in Python for converting between multiple unit types including temperature, distance, and weight.
+A Python command-line application that converts between multiple unit categories including temperature, distance, and weight.
 
-The program provides a clean user interface, validates user input, and demonstrates a modular and maintainable code structure.
+The application provides an interactive menu, validates user input, and persists conversion history using a CSV file.
 
 ---
 
 ## Features
 
 ### Temperature Conversions
+
 - Celsius ↔ Fahrenheit
+    
 - Celsius ↔ Kelvin
+    
 - Fahrenheit ↔ Kelvin
+    
 
 ### Distance Conversions
-- KM ↔ Miles
+
+- Kilometers ↔ Miles
+    
 
 ### Weight Conversions
-- KG ↔ Pounds
+
+- Kilograms ↔ Pounds
+    
+
+### Conversion History
+
+- Save conversion history to a CSV file
+    
+- Load history automatically on startup
+    
+- Display previous conversions from within the application
+    
+- Validate the history file structure and contents
+    
+- Recreate the history file if it is missing or invalid
+    
 
 ### Additional Features
-- Interactive command-line menu
+
+- Interactive command-line interface
+    
 - Input validation using `try/except`
-- Modular and reusable conversion functions
-- Dictionary-based action mapping
+    
+- Function-based architecture
+    
+- Dictionary-based action dispatching
+    
+- Persistent data storage using CSV
+    
 
 ---
 
 ## Usage
 
-Run the program using:
+Run the application:
 
 ```bash
 python main.py
@@ -37,7 +65,7 @@ python main.py
 
 ---
 
-## Menu Example
+## Menu
 
 ```text
 Available options:
@@ -51,6 +79,7 @@ Available options:
 8: Miles → KM
 9: KG → Pounds
 10: Pounds → KG
+11: Conversion History
 0: Exit
 ```
 
@@ -66,81 +95,118 @@ Result: 6.21 Miles
 
 ---
 
+## Conversion History Example
+
+```text
+1. KM 10.00 = Miles 6.21
+2. Celsius 100.00 = Fahrenheit 212.00
+```
+
+---
+
 ## Project Structure
 
 ```text
 .
 ├── main.py
 ├── README.md
-└── .gitignore
+├── .gitignore
+└── conversions_history.csv
 ```
-
+> Note: `conversions_history.csv` is generated automatically on first run and is ignored by Git.
 ---
 
 ## How It Works
 
-- Each conversion type is implemented as a separate function
-- More complex conversions reuse simpler conversion functions
-- A dictionary (`actions`) maps menu choices to functions
-- Input is validated to prevent invalid numeric input
-- The application runs continuously until the user exits
+- Each conversion is implemented as a dedicated function.
+    
+- Complex conversions reuse existing conversion functions.
+    
+- A dictionary (`actions`) maps menu selections to functions.
+    
+- User input is validated before processing.
+    
+- Conversion history is stored in a CSV file.
+    
+- History is loaded automatically when the program starts.
+    
 
 ---
 
 ## Concepts Used
 
-- Functional programming
-- Dictionary-based function dispatching
-- Input validation and exception handling
-- Separation of logic from user interaction
-- Code reuse and modular design
+- Functions
+    
+- Dictionary dispatch tables
+    
+- File handling
+    
+- CSV processing
+    
+- Input validation
+    
+- Exception handling
+    
+- Modular design
+    
+- Data persistence
+    
 
 ---
 
 ## Requirements
 
-- Python 3.x
+- Python 3.10+ (or Python 3.x)
+    
 
 ---
 
-## Changelog
+## Development Roadmap
 
-### feat: add distance and weight conversions
-- Add KM ↔ Miles conversion support
-- Add KG ↔ Pounds conversion support
-- Generalize input handling using `get_value`
-- Transform project into multi-unit converter
+### Phase 1 (Completed)
 
-### feat: support Kelvin conversions
-- Add Kelvin conversion functions
-- Extend CLI menu options
-- Improve coverage of temperature units
+- Temperature conversions
+    
+- Distance conversions
+    
+- Weight conversions
+    
+- Conversion history
+    
+- CSV persistence
+    
 
-### feat: add temperature conversion CLI
-- Add Celsius and Fahrenheit conversion functions
-- Implement interactive menu using dictionary
-- Handle invalid input using `try/except`
+### Phase 2 (Planned)
 
-### initial project setup
-- Initialize repository
-- Add base project files
+#### 1. Convert the application to OOP
+
+- Introduce classes for converters
+    
+- Improve maintainability and scalability
+    
+- Separate business logic from application flow
+    
+
+#### 2. Add Unit Tests
+
+- Test all conversion functions
+    
+- Test CSV history handling
+    
+- Improve reliability and prevent regressions
+    
+
+#### 3. Build a GUI
+
+- Replace the CLI with a graphical interface
+    
+- Improve usability
+    
+- Provide a better user experience
+    
 
 ---
 
 ## Author
 
 Ahmad Kitana
-
----
-
-## Future Improvements
-
-- Add more conversion categories
-  - Length
-  - Area
-  - Volume
-  - Speed
-- Add validation for physical constraints
-- Support command-line arguments using `argparse`
-- Add unit tests
-- Convert project into installable CLI tool
