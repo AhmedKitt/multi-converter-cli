@@ -36,7 +36,7 @@ def pounds_to_kg(pounds: float) -> float:
     kg = pounds / 2.20462
     return kg
 
-def show_conversion_history(conversion_history: list) -> None:
+def display_conversion_history(conversion_history: list) -> None:
     if not conversion_history :
         print("the conversion history is empty")
         return
@@ -44,7 +44,7 @@ def show_conversion_history(conversion_history: list) -> None:
         print(f'{index}. {item[0]} {float(item[1]):.2f} '
               f'= {item[2]} {float(item[3]):.2f}')
 
-def read_data_from_history_file() -> list:
+def load_conversion_history() -> list:
     conversion_history = []
     with open("conversions_history.csv", "r", newline='') as file:
         reader = csv.reader(file)
@@ -53,20 +53,20 @@ def read_data_from_history_file() -> list:
             conversion_history.append(row)
         return conversion_history
 
-def clear_file_content(file_header: list) -> None:
+def reset_history_file(file_header: list) -> None:
     with open("conversions_history.csv", "w", newline='') as file:
         writer = csv.writer(file)
         writer.writerow(file_header)
 
 def init_history_file(file_header: list) -> list:
-    if check_history_file_validity(file_header):
-        return read_data_from_history_file()
+    if is_history_file_valid(file_header):
+        return load_conversion_history()
     else:
-        clear_file_content(file_header)
+        reset_history_file(file_header)
         return []
 
 
-def check_history_file_validity(file_header: list) -> bool:
+def is_history_file_valid(file_header: list) -> bool:
     try:
         with open("conversions_history.csv", "r", newline='') as file:
             reader = csv.reader(file)
@@ -83,7 +83,7 @@ def check_history_file_validity(file_header: list) -> bool:
     except FileNotFoundError:
         return False
 
-def add_row_in_file(row: list) -> None:
+def append_history_record(row: list) -> None:
     with open("conversions_history.csv", "a", newline='') as file:
         writer = csv.writer(file)
         writer.writerow(row)
@@ -152,7 +152,7 @@ actions = {
     },
     11: {
         "label": "Conversion History",
-        "func": show_conversion_history,
+        "func": display_conversion_history,
         "required_input": False
     },
     0: {
@@ -177,7 +177,7 @@ def get_choice(actions_dict):
             print("Please enter a number.")
 
 
-def get_value(prompt):
+def get_numeric_input(prompt):
     while True:
         try:
             return float(input(prompt))
@@ -186,8 +186,8 @@ def get_value(prompt):
 
 def main():
 
-    file_header = ["Input Unit", "Input Value", "Output Unit", "Result"]
-    conversions_history = init_history_file(file_header)
+    history_file_header = ["Input Unit", "Input Value", "Output Unit", "Result"]
+    conversions_history = init_history_file(history_file_header)
 
     while True:
         choice = get_choice(actions)
@@ -198,16 +198,16 @@ def main():
             break
 
         elif action.get("required_input", True):
-            value = get_value(f"Enter the value in {action['in_unit']}: ")
+            value = get_numeric_input(f"Enter the value in {action['in_unit']}: ")
             result = action["func"](value)
 
             print(f"Result: {result:.2f} {action['out_unit']}")
 
             row = [action["in_unit"], value, action["out_unit"], result]
             conversions_history.append(row)
-            add_row_in_file(row)
+            append_history_record(row)
         else:
-            show_conversion_history(conversions_history)
+            display_conversion_history(conversions_history)
 
 
 if __name__ == "__main__":
