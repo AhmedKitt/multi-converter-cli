@@ -1,3 +1,5 @@
+import csv
+
 def celsius_to_fahrenheit(celsius: float) -> float:
     return celsius * 9 / 5 + 32
 
@@ -33,6 +35,58 @@ def kg_to_pounds(kg: float) -> float:
 def pounds_to_kg(pounds: float) -> float:
     kg = pounds / 2.20462
     return kg
+
+def show_conversion_history(conversion_history: list) -> None:
+    if not conversion_history :
+        print("the conversion history is empty")
+        return
+    for index, item in enumerate(conversion_history, start=1):
+        print(f'{index}. {item[0]} {float(item[1]):.2f} '
+              f'= {item[2]} {float(item[3]):.2f}')
+
+def read_data_from_history_file() -> list:
+    conversion_history = []
+    with open("conversions_history.csv", "r", newline='') as file:
+        reader = csv.reader(file)
+        next(reader)
+        for row in reader:
+            conversion_history.append(row)
+        return conversion_history
+
+def clear_file_content(file_header: list) -> None:
+    with open("conversions_history.csv", "w", newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(file_header)
+
+def init_history_file(file_header: list) -> list:
+    if check_history_file_validity(file_header):
+        return read_data_from_history_file()
+    else:
+        clear_file_content(file_header)
+        return []
+
+
+def check_history_file_validity(file_header: list) -> bool:
+    try:
+        with open("conversions_history.csv", "r", newline='') as file:
+            reader = csv.reader(file)
+            header = next(reader, None)
+            if header != file_header:
+                return False
+            try:
+                for row in reader:
+                    float(row[1])
+                    float(row[3])
+                return True
+            except (ValueError, IndexError):
+                return False
+    except FileNotFoundError:
+        return False
+
+def add_row_in_file(row: list) -> None:
+    with open("conversions_history.csv", "a", newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(row)
 
 
 actions = {
@@ -96,6 +150,11 @@ actions = {
         "in_unit": "Pounds",
         "out_unit": "KG"
     },
+    11: {
+        "label": "Conversion History",
+        "func": show_conversion_history,
+        "required_input": False
+    },
     0: {
         "label": "Exit",
         "func": None
@@ -126,6 +185,10 @@ def get_value(prompt):
             print("Invalid number. Try again.")
 
 def main():
+
+    file_header = ["Input Unit", "Input Value", "Output Unit", "Result"]
+    conversions_history = init_history_file(file_header)
+
     while True:
         choice = get_choice(actions)
         action = actions[choice]
@@ -134,10 +197,18 @@ def main():
             print("Goodbye.")
             break
 
-        value = get_value(f"Enter the value in {action['in_unit']}: ")
-        result = action["func"](value)
+        elif action.get("required_input", True):
+            value = get_value(f"Enter the value in {action['in_unit']}: ")
+            result = action["func"](value)
 
-        print(f"Result: {result:.2f} {action['out_unit']}")
+            print(f"Result: {result:.2f} {action['out_unit']}")
+
+            row = [action["in_unit"], value, action["out_unit"], result]
+            conversions_history.append(row)
+            add_row_in_file(row)
+        else:
+            show_conversion_history(conversions_history)
+
 
 if __name__ == "__main__":
     main()

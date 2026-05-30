@@ -2,3 +2,4 @@
 __pycache__/
 *.pyc
 venv/
+conversions_history.csv
