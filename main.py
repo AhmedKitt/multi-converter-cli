@@ -1,4 +1,5 @@
 import csv
+from ConversionRecord import ConversionRecord
 
 def celsius_to_fahrenheit(celsius: float) -> float:
     return celsius * 9 / 5 + 32
@@ -41,8 +42,8 @@ def display_conversion_history(conversion_history: list) -> None:
         print("the conversion history is empty")
         return
     for index, item in enumerate(conversion_history, start=1):
-        print(f'{index}. {item[0]} {float(item[1]):.2f} '
-              f'= {item[2]} {float(item[3]):.2f}')
+        print(f'{index}. {item.input_value:0.2f} {item.input_unit} '
+              f'= {item.result:0.2f} {item.output_unit}')
 
 def load_conversion_history() -> list:
     conversion_history = []
@@ -50,7 +51,8 @@ def load_conversion_history() -> list:
         reader = csv.reader(file)
         next(reader)
         for row in reader:
-            conversion_history.append(row)
+            record = ConversionRecord(*row)
+            conversion_history.append(record)
         return conversion_history
 
 def reset_history_file(file_header: list) -> None:
@@ -83,9 +85,10 @@ def is_history_file_valid(file_header: list) -> bool:
     except FileNotFoundError:
         return False
 
-def append_history_record(row: list) -> None:
+def append_history_record(record: ConversionRecord) -> None:
     with open("conversions_history.csv", "a", newline='') as file:
         writer = csv.writer(file)
+        row = record.to_list()
         writer.writerow(row)
 
 
@@ -198,14 +201,17 @@ def main():
             break
 
         elif action.get("required_input", True):
-            value = get_numeric_input(f"Enter the value in {action['in_unit']}: ")
-            result = action["func"](value)
+            input_value = get_numeric_input(f"Enter the input_value in {action['in_unit']}: ")
+            result = action["func"](input_value)
 
             print(f"Result: {result:.2f} {action['out_unit']}")
 
-            row = [action["in_unit"], value, action["out_unit"], result]
-            conversions_history.append(row)
-            append_history_record(row)
+            record = ConversionRecord(action["in_unit"],
+                                      input_value,
+                                      action["out_unit"],
+                                      result)
+            conversions_history.append(record)
+            append_history_record(record)
         else:
             display_conversion_history(conversions_history)
 
