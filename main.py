@@ -1,5 +1,6 @@
-import csv
 from ConversionRecord import ConversionRecord
+from ConversionsHistory import ConversionsHistory
+
 
 def celsius_to_fahrenheit(celsius: float) -> float:
     return celsius * 9 / 5 + 32
@@ -37,59 +38,13 @@ def pounds_to_kg(pounds: float) -> float:
     kg = pounds / 2.20462
     return kg
 
-def display_conversion_history(conversion_history: list) -> None:
-    if not conversion_history :
-        print("the conversion history is empty")
-        return
-    for index, item in enumerate(conversion_history, start=1):
-        print(f'{index}. {item.input_value:0.2f} {item.input_unit} '
-              f'= {item.result:0.2f} {item.output_unit}')
 
-def load_conversion_history() -> list:
-    conversion_history = []
-    with open("conversions_history.csv", "r", newline='') as file:
-        reader = csv.reader(file)
-        next(reader)
-        for row in reader:
-            record = ConversionRecord(*row)
-            conversion_history.append(record)
-        return conversion_history
+def display_conversion_history(conversions_history: ConversionsHistory) -> None:
+    print(conversions_history)
 
-def reset_history_file(file_header: list) -> None:
-    with open("conversions_history.csv", "w", newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(file_header)
-
-def init_history_file(file_header: list) -> list:
-    if is_history_file_valid(file_header):
-        return load_conversion_history()
-    else:
-        reset_history_file(file_header)
-        return []
-
-
-def is_history_file_valid(file_header: list) -> bool:
-    try:
-        with open("conversions_history.csv", "r", newline='') as file:
-            reader = csv.reader(file)
-            header = next(reader, None)
-            if header != file_header:
-                return False
-            try:
-                for row in reader:
-                    float(row[1])
-                    float(row[3])
-                return True
-            except (ValueError, IndexError):
-                return False
-    except FileNotFoundError:
-        return False
-
-def append_history_record(record: ConversionRecord) -> None:
-    with open("conversions_history.csv", "a", newline='') as file:
-        writer = csv.writer(file)
-        row = record.to_list()
-        writer.writerow(row)
+def exit_from_program(temp) -> None:
+    print("Goodbye.")
+    raise StopIteration
 
 
 actions = {
@@ -160,10 +115,10 @@ actions = {
     },
     0: {
         "label": "Exit",
-        "func": None
+        "func": exit_from_program,
+        "required_input": False
     }
 }
-
 
 def get_choice(actions_dict):
     while True:
@@ -189,18 +144,13 @@ def get_numeric_input(prompt):
 
 def main():
 
-    history_file_header = ["Input Unit", "Input Value", "Output Unit", "Result"]
-    conversions_history = init_history_file(history_file_header)
+    conversions_history = ConversionsHistory()
 
     while True:
         choice = get_choice(actions)
         action = actions[choice]
 
-        if action["func"] is None:
-            print("Goodbye.")
-            break
-
-        elif action.get("required_input", True):
+        if action.get("required_input", True):
             input_value = get_numeric_input(f"Enter the input_value in {action['in_unit']}: ")
             result = action["func"](input_value)
 
@@ -210,10 +160,12 @@ def main():
                                       input_value,
                                       action["out_unit"],
                                       result)
-            conversions_history.append(record)
-            append_history_record(record)
+            conversions_history.append_record(record)
         else:
-            display_conversion_history(conversions_history)
+            try:
+                action["func"](conversions_history)
+            except StopIteration:
+                break
 
 
 if __name__ == "__main__":
