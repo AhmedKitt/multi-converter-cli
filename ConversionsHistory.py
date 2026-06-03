@@ -5,18 +5,18 @@ class ConversionsHistory:
     FILE_NAME = "conversions_history.csv"
 
     def __init__(self):
-        self.records_list = self._init_history_file()
+        self._records: list[ConversionRecord] = self._init_history_file()
 
     def append_record(self, record: ConversionRecord) -> None:
-        self.records_list.append(record)
+        self._records.append(record)
         self._append_record_to_csv(record)
 
 
     def __str__(self):
-        if not self.records_list:
+        if not self._records:
             return ("The Conversion History Is Empty")
         data = []
-        for index, item in enumerate(self.records_list, start=1):
+        for index, item in enumerate(self._records, start=1):
             data.append(f'{index}. {item.input_value:0.2f} {item.input_unit} '
                         f'= {item.result:0.2f} {item.output_unit}')
         return "\n".join(data)
