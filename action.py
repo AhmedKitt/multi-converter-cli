@@ -1,3 +1,7 @@
+"""
+Action registry — maps menu keys to labels, converter functions, and units.
+Kept as plain data (no class needed).
+"""
 import converters
 
 # Each entry:
@@ -8,7 +12,7 @@ import converters
 #   requires_input: flag of conversion actions
 #   exit          : exit flag
 
-ACTIONS = {
+ACTIONS: dict[int, dict] = {
     1: {
         "label": "Celsius → Fahrenheit",
         "func": converters.celsius_to_fahrenheit,

@@ -1,9 +1,10 @@
 from ConversionRecord import ConversionRecord
-from ConversionsHistory import ConversionsHistory
+from ConversionHistory import ConversionHistory
 from action import ACTIONS
 
 
-def get_choice():
+def get_choice() -> int:
+    """Show the menu and return a valid action key."""
     while True:
         print("\nAvailable options:")
         for key, action in ACTIONS.items():
@@ -17,22 +18,23 @@ def get_choice():
         except ValueError:
             print("Please enter a number.")
 
-
-def get_numeric_input(prompt):
+def get_numeric_input(prompt: str) -> float:
+    """Ask for a float, retry on bad input."""
     while True:
         try:
             return float(input(prompt))
         except ValueError:
             print("Invalid number. Try again.")
 
+# Main loop
 def main():
-
-    conversions_history = ConversionsHistory()
+    conversions_history = ConversionHistory()
 
     while True:
         choice = get_choice()
         action = ACTIONS[choice]
 
+        # Conversion actions
         if action.get("required_input", True):
             input_value = get_numeric_input(f"Enter the input_value in {action['in_unit']}: ")
             result = action["func"](input_value)
@@ -44,13 +46,11 @@ def main():
                                       action['out_unit'],
                                       result)
             conversions_history.append_record(record)
-        elif action.get("exit", False):
+        # Non - conversion actions
+        elif action.get("exit", False): # Exit
             break
-        else:
+        else: # Display Conversion History
             print(conversions_history)
-
-
-
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,11 @@
 import csv
 from ConversionRecord import ConversionRecord
-class ConversionsHistory:
+
+class ConversionHistory:
+    """
+    Stores conversion records in memory and synchronizes them
+    with a CSV history file.
+    """
     FILE_HEADER = ["Input Unit", "Input Value", "Output Unit", "Result"]
     FILE_NAME = "conversions_history.csv"
 
@@ -8,11 +13,13 @@ class ConversionsHistory:
         self._records: list[ConversionRecord] = self._init_history_file()
 
     def append_record(self, record: ConversionRecord) -> None:
+        """Add a record to history and save it to the CSV file."""
         self._records.append(record)
         self._append_record_to_csv(record)
 
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return a formatted string representation of the conversion history."""
         if not self._records:
             return ("The Conversion History Is Empty")
         data = []
@@ -55,13 +62,14 @@ class ConversionsHistory:
         conversion_history = []
         with open(self.FILE_NAME, "r", newline='') as file:
             reader = csv.reader(file)
-            next(reader) #to skip header of csv file
+            next(reader) # Skip CSV header row.
             for row in reader:
                 record = ConversionRecord(*row)
                 conversion_history.append(record)
             return conversion_history
 
     def reset_history_file(self) -> None:
+        """Recreate the history file and write the CSV header."""
         with open(self.FILE_NAME, "w", newline='') as file:
             writer = csv.writer(file)
             writer.writerow(self.FILE_HEADER)
