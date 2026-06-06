@@ -37,15 +37,17 @@ def main():
         # Conversion actions
         if action.get("required_input", True):
             input_value = get_numeric_input(f"Enter the input_value in {action['in_unit']}: ")
-            result = action["func"](input_value)
+            try:
+                result = action["func"](input_value)
+                print(f"Result: {result:.2f} {action['out_unit']}")
 
-            print(f"Result: {result:.2f} {action['out_unit']}")
-
-            record = ConversionRecord(action['in_unit'],
-                                      input_value,
-                                      action['out_unit'],
-                                      result)
-            conversions_history.append_record(record)
+                record = ConversionRecord(action['in_unit'],
+                                          input_value,
+                                          action['out_unit'],
+                                          result)
+                conversions_history.append_record(record)
+            except ValueError as e:
+                print(f"Error: {e}") # Display validation error message.
         # Non - conversion actions
         elif action.get("exit", False): # Exit
             break
